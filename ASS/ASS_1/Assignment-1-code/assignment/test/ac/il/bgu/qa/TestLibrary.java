@@ -90,16 +90,20 @@ public class TestLibrary {
         verify(mockDatabaseService, times(1)).registerUser(testUser.getId(), testUser);
     }
 
+
     @Test
     void GivenExistingUser_WhenRegisterUser_ThenUserAlreadyExistsException() {
+        // setup desired mock behavior that indicated that testUser already exists in the database
         when(mockDatabaseService.getUserById(testUser.getId())).thenReturn(testUser);
 
+        // extract the exception when trying to register user that already registered in the database
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> library.registerUser(testUser));
+
+        // verify that the method indeed throws exception for already registered user & registerUser() database method was never called
         assertEquals("User already exists.", exception.getMessage());
         verify(mockDatabaseService, never()).registerUser(any(), any());
     }
 
-    // Add more tests for the registerUser method to cover other scenarios
 
     @Test
     void GivenAvailableBookAndUser_WhenBorrowBook_ThenBookBorrowedSuccessfully() {
@@ -121,8 +125,6 @@ public class TestLibrary {
         verify(mockDatabaseService, never()).borrowBook(any(), any());
     }
 
-    // Add more tests for the borrowBook method to cover other scenarios
-
     @Test
     void GivenBorrowedBook_WhenReturnBook_ThenBookReturnedSuccessfully() {
         when(mockDatabaseService.getBookByISBN(testBook.getISBN())).thenReturn(testBook);
@@ -141,7 +143,6 @@ public class TestLibrary {
         BookNotFoundException exception = assertThrows(BookNotFoundException.class,
                 () -> library.returnBook(testBook.getISBN()));
         assertEquals("Book not found!", exception.getMessage());
-        //verify(testBook, never()).returnBook();
         verify(mockDatabaseService, never()).returnBook(any());
     }
 
