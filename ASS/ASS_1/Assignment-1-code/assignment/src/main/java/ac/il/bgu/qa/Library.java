@@ -56,7 +56,7 @@ public class Library {
      *  @param isbn The International Standard Book Number to be validated.
      *  @return true if valid, false otherwise.
     */
-    private boolean isISBNValid(String isbn) {
+    public boolean isISBNValid(String isbn) {
         // Check if the ISBN is null, return false if it is
         if (isbn == null) {
             return false;

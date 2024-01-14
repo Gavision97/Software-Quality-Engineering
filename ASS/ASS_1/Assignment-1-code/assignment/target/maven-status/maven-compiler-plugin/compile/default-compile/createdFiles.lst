@@ -1,0 +1,14 @@
+ac\il\bgu\qa\errors\BookNotFoundException.class
+ac\il\bgu\qa\errors\NoReviewsFoundException.class
+ac\il\bgu\qa\errors\UserNotRegisteredException.class
+ac\il\bgu\qa\services\ReviewService.class
+ac\il\bgu\qa\User.class
+ac\il\bgu\qa\Book.class
+ac\il\bgu\qa\errors\ReviewServiceUnavailableException.class
+ac\il\bgu\qa\services\DatabaseService.class
+ac\il\bgu\qa\errors\NotificationException.class
+ac\il\bgu\qa\services\NotificationService.class
+ac\il\bgu\qa\errors\BookNotBorrowedException.class
+ac\il\bgu\qa\Library.class
+ac\il\bgu\qa\errors\BookAlreadyBorrowedException.class
+ac\il\bgu\qa\errors\ReviewException.class
