@@ -147,59 +147,5 @@ public class TestLibrary {
     }
 
     //TODO : Add test for verifying exceptions when adding User&Book instances to Library instance with wrong formats
-
-    // TODO : check whether test required only for Library object, if indeed, delete the next test
-    // Simple test for Book class
-
-    @Test
-    void GivenNewBook_WhenIsBorrowed_ThenNotBorrowed(){
-        Book book = new Book("4210596831024", "Piter Pen", "Harry McWriter");
-
-        boolean isBorrowed = book.isBorrowed();
-
-        assertFalse(isBorrowed, "New book should not be borrowed" );
-    }
-
-    @Test
-    void GivenNewBook_WhenIsBorrowed_TheNotBorrowed(){
-        Book book = new Book("2104700595413", "MasterClass", "Joseph Steph");
-
-        book.borrow();
-        boolean isBorrowed = book.isBorrowed();
-
-        assertTrue(isBorrowed, "Borrowed book should hold True value in isBorrowed method");
-    }
-
-    @Test
-    void GivenBorrowedBook_WhenReturnAndIsBorrowed_ThenNotBorrowed() {
-        Book book = new Book("4210596831024", "Piter Pen", "Harry McWriter");
-        book.borrow();
-
-        book.returnBook();
-        boolean isBorrowed = book.isBorrowed();
-
-        assertFalse(isBorrowed, "Returned book should have isBorrowed false");
-    }
-
-    @Test
-    void GivenNewBook_WhenReturnAndIsBorrowed_ThenIllegalStateException() {
-        Book book = new Book("5210100000213", "Animals History", "Marry Chen");
-
-        assertThrows(IllegalStateException.class, () -> book.returnBook(),
-                "Returning a book that wasn't borrowed should throw IllegalStateException");
-    }
-
-    @Test
-    void GivenBorrowedBook_WhenBorrowAndIsBorrowed_ThenIllegalStateException() {
-        // Given
-        Book book = new Book("4210596831024", "Piter Pen", "Harry McWriter");
-        book.borrow();
-
-        // When / Then
-        assertThrows(IllegalStateException.class, () -> book.borrow(),
-                "Borrowing an already borrowed book should throw IllegalStateException");
-    }
-
-
 }
 
