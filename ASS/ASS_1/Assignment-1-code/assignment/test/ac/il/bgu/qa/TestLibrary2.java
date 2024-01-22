@@ -3,15 +3,12 @@ package ac.il.bgu.qa;
 import ac.il.bgu.qa.services.DatabaseService;
 import ac.il.bgu.qa.services.NotificationService;
 import ac.il.bgu.qa.services.ReviewService;
-import ac.il.bgu.qa.errors.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.*;
 
 public class TestLibrary2{
     @Mock
@@ -203,6 +200,23 @@ public class TestLibrary2{
     }
 
 /**
- *
+ *Library RegisterUser Tests
  */
+@Test
+    public void GivenNewLibrary_WhenAddingNewUser_AddSuccessfully(){
+    Library library=new Library(mockDatabaseService,mockReviewService);
+    when(mockUser.getId()).thenReturn("206515744111");
+    when(mockUser.getName()).thenReturn("david");
+    when(mockUser.getNotificationService()).thenReturn(mockNotificationService);
+    when(mockDatabaseService.getUserById("206515744111")).thenReturn(null);
+
+    library.registerUser(mockUser);
+
+    verify(mockUser,times(4)).getId();
+    verify(mockUser,times(2)).getName();
+    verify(mockUser).getNotificationService();
+    verify(mockDatabaseService).getUserById("206515744111");
+    verify(mockDatabaseService).registerUser("206515744111",mockUser);
+
+}
 }
