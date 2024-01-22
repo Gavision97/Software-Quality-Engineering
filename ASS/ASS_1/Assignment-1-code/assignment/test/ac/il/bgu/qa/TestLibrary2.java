@@ -17,19 +17,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestLibrary2 {
     @Mock
-    private Book mockBook;
+    Book mockBook;
     @Mock
-    private Library mockLibrary;
+    Library mockLibrary;
     @Mock
-    private User mockUser;
+    User mockUser;
     @Mock
-    private DatabaseService mockDatabaseService;
+     DatabaseService mockDatabaseService;
     @Mock
-    private NotificationService mockNotificationService;
+    NotificationService mockNotificationService;
     @Mock
-    private ReviewService mockReviewService;
+    ReviewService mockReviewService;
     @Spy
-    private List<String> spyReviews;
+    List<String> spyReviews;
 
     @BeforeEach
     public void init() {
@@ -143,7 +143,8 @@ public class TestLibrary2 {
 
         //Adding null Book Exception
         Library library = new Library(mockDatabaseService, mockReviewService);
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(null));
+        IllegalArgumentException exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(null));
+        assertEquals("Invalid book.", exception.getMessage());
     }
 
     @Test
@@ -152,9 +153,11 @@ public class TestLibrary2 {
 
         //ISBN Exceptions
         when(mockBook.getISBN()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid ISBN.", exception.getMessage());
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-000");
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        exception =assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid ISBN.", exception.getMessage());
 
 
     }
@@ -166,9 +169,12 @@ public class TestLibrary2 {
         //Title Exceptions
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid title.",exception.getMessage());
         when(mockBook.getTitle()).thenReturn("");
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        exception=assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid title.",exception.getMessage());
+
     }
 
     @Test
@@ -177,17 +183,29 @@ public class TestLibrary2 {
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn("The Islands");
         when(mockBook.getAuthor()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        IllegalArgumentException exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid author.",exception.getMessage());
+
         when(mockBook.getAuthor()).thenReturn("");
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid author.",exception.getMessage());
+
         when(mockBook.getAuthor()).thenReturn("1234");
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid author.",exception.getMessage());
+
         when(mockBook.getAuthor()).thenReturn("Da4vid");
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid author.",exception.getMessage());
+
         when(mockBook.getAuthor()).thenReturn("da!@#$");
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid author.",exception.getMessage());
+
         when(mockBook.getAuthor()).thenReturn("David--Third");
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Invalid author.",exception.getMessage());
+
 
     }
 
@@ -198,7 +216,9 @@ public class TestLibrary2 {
         when(mockBook.getTitle()).thenReturn("The Islands");
         when(mockBook.getAuthor()).thenReturn("David The third");
         when(mockBook.isBorrowed()).thenReturn(true);
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        IllegalArgumentException exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Book with invalid borrowed state.",exception.getMessage());
+
     }
 
     @Test
@@ -209,7 +229,9 @@ public class TestLibrary2 {
         when(mockBook.getAuthor()).thenReturn("David The third");
         when(mockBook.isBorrowed()).thenReturn(false);
         when(mockDatabaseService.getBookByISBN("978-3-16-148410-0")).thenReturn(mockBook);
-        assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        IllegalArgumentException exception= assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
+        assertEquals("Book already exists.",exception.getMessage());
+
 
     }
 
@@ -237,14 +259,17 @@ public class TestLibrary2 {
     @Test
     public void GivenNewLibrary_WhenAddingNewUser_TriggerNullUserException() {
         Library library = new Library(mockDatabaseService, mockReviewService);
-        assertThrows(IllegalArgumentException.class, () -> library.registerUser(null));
+       IllegalArgumentException exception= assertThrows(IllegalArgumentException.class, () -> library.registerUser(null));
+       assertEquals("Invalid user.",exception.getMessage());
     }
 
     @Test
     public void GivenNewLibrary_WhenAddingNewUser_TriggerBadUserIDException() {
         Library library = new Library(mockDatabaseService, mockReviewService);
         when(mockUser.getId()).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> library.registerUser(mockUser));
+        IllegalArgumentException exception= assertThrows(IllegalArgumentException.class, () -> library.registerUser(mockUser));
+        assertThrows(IllegalArgumentException.class, () -> library.registerUser(null));
+
         when(mockUser.getId()).thenReturn("2A");
         assertThrows(IllegalArgumentException.class, () -> library.registerUser(mockUser));
 
