@@ -1,5 +1,8 @@
 package ac.il.bgu.qa;
 
+import ac.il.bgu.qa.errors.BookAlreadyBorrowedException;
+import ac.il.bgu.qa.errors.BookNotFoundException;
+import ac.il.bgu.qa.errors.UserNotRegisteredException;
 import ac.il.bgu.qa.services.DatabaseService;
 import ac.il.bgu.qa.services.NotificationService;
 import ac.il.bgu.qa.services.ReviewService;
@@ -17,23 +20,19 @@ public class TestLibrary2{
     private Library mockLibrary;
     @Mock
     private User mockUser;
-
     @Mock
     private DatabaseService mockDatabaseService;
     @Mock
     private NotificationService mockNotificationService;
-
     @Mock
     private ReviewService mockReviewService;
-
     @BeforeEach
     public void init(){MockitoAnnotations.openMocks(this);}
-
     /**
      * Book Tests
      */
-        @Test
-        public void givenNewMockBook_whenGettersCalled_ThenReturnBookMetaInformation(){
+    @Test
+    public void givenNewMockBook_whenGettersCalled_ThenReturnBookMetaInformation(){
         when(mockBook.getAuthor()).thenReturn("David");
         when(mockBook.getISBN()).thenReturn("55511");
         when(mockBook.getTitle()).thenReturn("The Islands");
@@ -61,7 +60,7 @@ public class TestLibrary2{
         assertEquals(ISBN,"55511");
         assertEquals(title,"The Islands");
     }
-     @Test
+    @Test
     public void givenABook_whenBorrowed_ThenReturnBorrowed(){
         when(mockBook.isBorrowed()).thenReturn(true);
         boolean flag= mockBook.isBorrowed();
@@ -84,7 +83,6 @@ public class TestLibrary2{
             book.returnBook();
         });
         }
-
     /**
      * User Tests
      */
@@ -104,9 +102,8 @@ public class TestLibrary2{
     /**
      * Library AddBook Tests
      */
-
-   @Test
-   public void GivenNewLibrary_WhenAddNewBook_PassAllChecks(){
+    @Test
+    public void GivenNewLibrary_WhenAddNewBook_PassAllChecks(){
        Library library=new Library(mockDatabaseService,mockReviewService);
        //Next lines are for returning all the needed mock Strings to pass all checks
        when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
@@ -123,19 +120,18 @@ public class TestLibrary2{
        verify(mockBook).isBorrowed();
        verify(mockDatabaseService).addBook("978-3-16-148410-0",mockBook);
    }
-
     /**
      * Library AddBook Exceptions check
      */
     @Test
-    public void GivenNewLibrary_WhenAddingNewBook_ActivateNullBookExceptions() {
+    public void GivenNewLibrary_WhenAddingNewBook_TriggerNullBookExceptions() {
 
         //Adding null Book Exception
         Library library = new Library(mockDatabaseService, mockReviewService);
         assertThrows(IllegalArgumentException.class, () -> library.addBook(null));
     }
     @Test
-    public void GivenNewLibrary_WhenAddingNewBook_ActivateISBNExceptions() {
+    public void GivenNewLibrary_WhenAddingNewBook_TriggerISBNExceptions() {
         Library library = new Library(mockDatabaseService, mockReviewService);
 
         //ISBN Exceptions
@@ -147,7 +143,7 @@ public class TestLibrary2{
 
     }
     @Test
-    public void GivenNewLibrary_WhenAddingNewBook_ActivateTitleExceptions() {
+    public void GivenNewLibrary_WhenAddingNewBook_TriggerTitleExceptions() {
         Library library = new Library(mockDatabaseService, mockReviewService);
 
         //Title Exceptions
@@ -157,9 +153,8 @@ public class TestLibrary2{
         when(mockBook.getTitle()).thenReturn("");
         assertThrows(IllegalArgumentException.class, () -> library.addBook(mockBook));
     }
-
     @Test
-    public void GivenNewLibrary_WhenAddingNewBook_ActivateAuthorExceptions() {
+    public void GivenNewLibrary_WhenAddingNewBook_TriggerAuthorExceptions() {
         Library library = new Library(mockDatabaseService, mockReviewService);
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn("The Islands");
@@ -177,9 +172,8 @@ public class TestLibrary2{
         assertThrows(IllegalArgumentException.class,()->library.addBook(mockBook));
 
     }
-
     @Test
-    public void GivenNewLibrary_WhenAddingNewBook_ActivateIsBorrowedExceptions() {
+    public void GivenNewLibrary_WhenAddingNewBook_TriggerIsBorrowedExceptions() {
         Library library = new Library(mockDatabaseService, mockReviewService);
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn("The Islands");
@@ -188,7 +182,7 @@ public class TestLibrary2{
         assertThrows(IllegalArgumentException.class,()->library.addBook(mockBook));
         }
         @Test
-    public void GivenNewLibrary_WhenAddingNewBook_ActivateBookAlreadyInDatabaseExceptions() {
+    public void GivenNewLibrary_WhenAddingNewBook_TriggerBookAlreadyInDatabaseExceptions() {
         Library library = new Library(mockDatabaseService, mockReviewService);
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn("The Islands");
@@ -198,7 +192,6 @@ public class TestLibrary2{
         assertThrows(IllegalArgumentException.class,()->library.addBook(mockBook));
 
     }
-
 /**
  *Library RegisterUser Tests
  */
@@ -219,4 +212,114 @@ public class TestLibrary2{
     verify(mockDatabaseService).registerUser("206515744111",mockUser);
 
 }
+@Test
+    public void GivenNewLibrary_WhenAddingNewUser_TriggerNullUserException(){
+    Library library=new Library(mockDatabaseService,mockReviewService);
+    assertThrows(IllegalArgumentException.class,()-> library.registerUser(null));
 }
+    @Test
+    public void GivenNewLibrary_WhenAddingNewUser_TriggerBadUserIDException(){
+        Library library=new Library(mockDatabaseService,mockReviewService);
+        when(mockUser.getId()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class,()-> library.registerUser(mockUser));
+        when(mockUser.getId()).thenReturn("2A");
+        assertThrows(IllegalArgumentException.class,()-> library.registerUser(mockUser));
+
+    }
+    @Test
+    public void GivenNewLibrary_WhenAddingNewUser_TriggerBadUserNameException() {
+        Library library=new Library(mockDatabaseService,mockReviewService);
+        when(mockUser.getId()).thenReturn("1206515744111");
+        when(mockUser.getName()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class,()-> library.registerUser(mockUser));
+        when(mockUser.getName()).thenReturn("");
+        assertThrows(IllegalArgumentException.class,()-> library.registerUser(mockUser));
+    }
+    @Test
+    public void GivenNewLibrary_WhenAddingNewUser_TriggerBadUserNotificationServiceException() {
+        Library library = new Library(mockDatabaseService, mockReviewService);
+        when(mockUser.getId()).thenReturn("1206515744111");
+        when(mockUser.getName()).thenReturn("David");
+        when(mockUser.getNotificationService()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class,()-> library.registerUser(mockUser));
+
+    }
+    @Test
+    public void GivenNewLibrary_WhenAddingNewUser_TriggerUserAlreadyInDatabaseException() {
+        Library library = new Library(mockDatabaseService, mockReviewService);
+        when(mockUser.getId()).thenReturn("1206515744111");
+        when(mockUser.getName()).thenReturn("David");
+        when(mockUser.getNotificationService()).thenReturn(mockNotificationService);
+        when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(mockUser);
+        assertThrows(IllegalArgumentException.class,()-> library.registerUser(mockUser));
+    }
+
+    /**
+     * Library BorrowBook Tests
+     */
+    @Test
+    public void GivenLibrary_WhenBorrowBook_BorrowBookSuccessfully(){
+    Library library=new Library(mockDatabaseService,mockReviewService);
+    when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
+    when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
+    when(mockUser.getId()).thenReturn("206515744111");
+    when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(mockUser);
+    when(mockBook.isBorrowed()).thenReturn(false);
+
+    library.borrowBook(mockBook.getISBN(),mockUser.getId());
+    verify(mockDatabaseService).borrowBook(mockBook.getISBN(),mockUser.getId());
+
+}
+@Test
+    public void GivenLibrary_WhenBorrowBook_TriggerBadISBNException(){
+    Library library=new Library(mockDatabaseService,mockReviewService);
+    when(mockBook.getISBN()).thenReturn("a512gasc");
+    when(mockUser.getId()).thenReturn("206515744111");
+    assertThrows(IllegalArgumentException.class,()->library.borrowBook(mockBook.getISBN(),mockUser.getId()));
+    }
+
+    @Test
+    public void GivenLibrary_WhenBorrowBook_TriggerBookNotInDatabaseException(){
+        Library library=new Library(mockDatabaseService,mockReviewService);
+        when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
+        when(mockUser.getId()).thenReturn("206515744111");
+        when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(null);
+        assertThrows(BookNotFoundException.class,()->library.borrowBook(mockBook.getISBN(),mockUser.getId()));
+    }
+    @Test
+    public void GivenLibrary_WhenBorrowBook_TriggerBadUserIDException(){
+        Library library=new Library(mockDatabaseService,mockReviewService);
+        when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
+        when(mockUser.getId()).thenReturn("20651574411441");
+        when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(null);
+        assertThrows(IllegalArgumentException.class,()->library.borrowBook(mockBook.getISBN(),mockUser.getId()));
+    }
+    @Test
+    public void GivenLibrary_WhenBorrowBook_TriggerUserNotRegisteredException(){
+        Library library=new Library(mockDatabaseService,mockReviewService);
+        when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
+        when(mockUser.getId()).thenReturn("206515744111");
+        when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
+        when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(null);
+        assertThrows(UserNotRegisteredException.class,()->library.borrowBook(mockBook.getISBN(),mockUser.getId()));
+    }
+    @Test
+    public void GivenLibrary_WhenBorrowBook_TriggerBookAlreadyBorrowedException(){
+        Library library=new Library(mockDatabaseService,mockReviewService);
+        when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
+        when(mockUser.getId()).thenReturn("206515744111");
+        when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
+        when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(mockUser);
+        when(mockBook.isBorrowed()).thenReturn(true);
+        assertThrows(BookAlreadyBorrowedException.class,()->library.borrowBook(mockBook.getISBN(),mockUser.getId()));
+    }
+    /**
+     * Library ReturnBook Tests
+     */
+    @Test
+    public void GivenLibrary_WhenReturnBook_ReturnSuccessfully(){
+        Library library=new Library(mockDatabaseService,mockReviewService);
+
+        when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
+    }
+    }
