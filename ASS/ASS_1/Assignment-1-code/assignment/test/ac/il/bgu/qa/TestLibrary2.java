@@ -422,29 +422,37 @@ public class TestLibrary2 {
         when(mockBook.isBorrowed()).thenReturn(true);
         when(mockDatabaseService.getBookByISBN("978-3-16-148410-0")).thenReturn(mockBook);
         when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
-
         library.returnBook("978-3-16-148410-0");
         verify(mockDatabaseService).returnBook("978-3-16-148410-0");
     }
 
     @Test
-    public void GivenLibrary_WhenReturnBook_TriggerBadISBNException() {
-        when(mockBook.getISBN()).thenReturn("978-3-16-148410");
-        assertThrows(IllegalArgumentException.class, () -> library.returnBook("978-3-16-148410"));
+    public void GivenLibrary_WhenReturnBook_TriggerBadISBNExceptionByNullISBN() {
+        when(mockBook.getISBN()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> library.returnBook(mockBook.getISBN()));
+        IllegalArgumentException exception=assertThrows(IllegalArgumentException.class, () -> library.returnBook(mockBook.getISBN()));
+        assertEquals("Invalid ISBN.",exception.getMessage());
+        verify(mockDatabaseService,times(0)).returnBook(any());
 
     }
 
     @Test
-    public void GivenLibrary_WhenReturnBook_TriggerBookNotFoundException() {
+    public void GivenLibrary_WhenReturnBook_TriggerBookNotFoundExceptionByNullBook() {
         when(mockDatabaseService.getBookByISBN(any())).thenReturn(null);
-        assertThrows(BookNotFoundException.class, () -> library.returnBook("978-3-16-148410-0"));
+        BookNotFoundException exception= assertThrows(BookNotFoundException.class, () -> library.returnBook("978-3-16-148410-0"));
+        assertEquals("Book not found!",exception.getMessage());
+        verify(mockDatabaseService,times(0)).returnBook(any());
     }
 
+
     @Test
-    public void GivenLibrary_WhenReturnBook_TriggerBookNotBorrowedException() {
+    public void GivenLibrary_WhenReturnBook_TriggerBookNotBorrowedExceptionByBorrowedBook() {
+        when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockDatabaseService.getBookByISBN(any())).thenReturn(mockBook);
         when(mockBook.isBorrowed()).thenReturn(false);
-        assertThrows(BookNotBorrowedException.class, () -> library.returnBook("978-3-16-148410-0"));
+       BookNotBorrowedException exception= assertThrows(BookNotBorrowedException.class, () -> library.returnBook(mockBook.getISBN()));
+        assertEquals("Book wasn't borrowed!",exception.getMessage());
+        verify(mockDatabaseService,times(0)).returnBook(any());
     }
 
     /**
@@ -467,44 +475,67 @@ public class TestLibrary2 {
         verify(mockUser).sendNotification(any());
     }
     @Test
-    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerBadISBNException() {
-        assertThrows(IllegalArgumentException.class,()->library.notifyUserWithBookReviews("1243666","206515744111"));
-    }
-    @Test
-    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerBadUserIDException() {
-        assertThrows(IllegalArgumentException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206511"));
-        assertThrows(IllegalArgumentException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0",null));
+    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerBadISBNExceptionWhenISBNEmptyOrNull() {
+       IllegalArgumentException exception= assertThrows(IllegalArgumentException.class,()->library.notifyUserWithBookReviews(null,"206515744111"));
+        assertEquals("Invalid ISBN.",exception.getMessage());
+        verify(mockUser,times(0)).sendNotification(any());
 
+        exception= assertThrows(IllegalArgumentException.class,()->library.notifyUserWithBookReviews("","206515744111"));
+        assertEquals("Invalid ISBN.",exception.getMessage());
+        verify(mockUser,times(0)).sendNotification(any());
     }
     @Test
-    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerBookNotFoundException() {
+    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerBadUserIDExceptionByNull() {
+        IllegalArgumentException exception=assertThrows(IllegalArgumentException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0",null));
+        assertEquals("Invalid user Id.",exception.getMessage());
+        verify(mockUser,times(0)).sendNotification(any());
+    }
+
+    @Test
+    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerBookNotFoundExceptionByNullBook() {
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn("The Islands");
         when(mockUser.getId()).thenReturn("206515744111");
         when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(null);
-       assertThrows(BookNotFoundException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+       BookNotFoundException exception= assertThrows(BookNotFoundException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        assertEquals("Book not found!",exception.getMessage());
+        verify(mockUser,times(0)).sendNotification(any());
     }
     @Test
-    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerUserNotRegisteredException() {
+    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerUserNotRegisteredExceptionByNullUser() {
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn("The Islands");
         when(mockUser.getId()).thenReturn("206515744111");
         when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
         when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(null);
 
-        assertThrows(UserNotRegisteredException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+      UserNotRegisteredException exception=  assertThrows(UserNotRegisteredException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        assertEquals("User not found!",exception.getMessage());
+        verify(mockUser,times(0)).sendNotification(any());
     }
     @Test
-    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerNoReviewsFoundException() {
+    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerNoReviewsFoundExceptionByNullReviews() {
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn("The Islands");
         when(mockUser.getId()).thenReturn("206515744111");
         when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
         when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(mockUser);
         when(mockReviewService.getReviewsForBook(any())).thenReturn(null);
-        assertThrows(NoReviewsFoundException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        NoReviewsFoundException exception= assertThrows(NoReviewsFoundException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        assertEquals("No reviews found!",exception.getMessage());
+        verify(mockUser,times(0)).sendNotification(any());
+    }
+    @Test
+    public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerNoReviewsFoundExceptionByEmptyReviews() {
+        when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
+        when(mockBook.getTitle()).thenReturn("The Islands");
+        when(mockUser.getId()).thenReturn("206515744111");
+        when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
+        when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(mockUser);
         when(mockReviewService.getReviewsForBook(any())).thenReturn(spyReviews);
-        assertThrows(NoReviewsFoundException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        NoReviewsFoundException exception=assertThrows(NoReviewsFoundException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        assertEquals("No reviews found!",exception.getMessage());
+        verify(mockUser,times(0)).sendNotification(any());
     }
     @Test
     public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerReviewServiceUnavailException() {
@@ -514,12 +545,13 @@ public class TestLibrary2 {
         when(mockDatabaseService.getBookByISBN(mockBook.getISBN())).thenReturn(mockBook);
         when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(mockUser);
         when(mockReviewService.getReviewsForBook(any())).thenThrow(ReviewServiceUnavailableException.class);
-        assertThrows(ReviewServiceUnavailableException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+       ReviewServiceUnavailableException exception= assertThrows(ReviewServiceUnavailableException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        assertEquals("Review service unavailable!",exception.getMessage());
+        verify(mockUser,times(0)).sendNotification(any());
     }
-    @Disabled
+    @Test
     public void GivenLibrary_WhenNotifyUserWithBookReviewCalled_TriggerNotificationException() {
         spyReviews.add("Amazing Book");
-
         when(mockBook.getISBN()).thenReturn("978-3-16-148410-0");
         when(mockBook.getTitle()).thenReturn("The Islands");
         when(mockUser.getId()).thenReturn("206515744111");
@@ -527,9 +559,17 @@ public class TestLibrary2 {
         when(mockDatabaseService.getUserById(mockUser.getId())).thenReturn(mockUser);
         when(mockReviewService.getReviewsForBook(any())).thenReturn(spyReviews);
         doThrow(NotificationException.class).when(mockUser).sendNotification(any());
-        assertThrows(NotificationException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        NotificationException exception= assertThrows(NotificationException.class,()->library.notifyUserWithBookReviews("978-3-16-148410-0","206515744111"));
+        assertEquals("Notification failed!",exception.getMessage());
+        verify(mockUser,times(5)).sendNotification(any());
     }
 /**
  * Library GetBookByIsbn Tests
  */
+
+@Test
+public void GivenLibrary_WhenGetBookByISBNCalled_CompleteSuccessfully() {
+
+
+}
 }
