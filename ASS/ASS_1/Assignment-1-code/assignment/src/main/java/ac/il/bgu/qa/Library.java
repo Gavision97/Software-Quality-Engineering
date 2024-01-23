@@ -282,6 +282,7 @@ public class Library {
         // Fetch the list of reviews for the specified book using the review service.
         List<String> reviews;
         try {
+
             reviews = reviewService.getReviewsForBook(ISBN);
 
             // If no reviews are found or the review list is empty, throw an exception.
@@ -295,7 +296,6 @@ public class Library {
             // Always close the review service connection after attempting to fetch the reviews.
             reviewService.close();
         }
-
         // Construct the notification message containing the book's title and its reviews.
         String notificationMessage = "Reviews for '" + book.getTitle() + "':\n" + String.join("\n", reviews);
 
