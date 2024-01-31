@@ -1,0 +1,32 @@
+strict digraph G {
+  1 [ color="red" ];
+  2 [ color="red" ];
+  3 [ color="red" ];
+  4 [ color="red" ];
+  5 [ color="red" ];
+  6 [ ];
+  7 [ ];
+  8 [ ];
+  9 [ color="red" ];
+  10 [ color="red" ];
+  11 [ color="red" ];
+  12 [ color="red" ];
+  13 [ color="red" ];
+  14 [ color="red" ];
+  1 -> 2 [ color="red" ];
+  2 -> 3 [ color="red" ];
+  3 -> 4 [ color="red" ];
+  4 -> 6 [ ];
+  4 -> 5 [ color="red" ];
+  6 -> 7 [ ];
+  7 -> 8 [ ];
+  5 -> 9 [ color="red" ];
+  8 -> 9 [ ];
+  9 -> 10 [ color="red" ];
+  10 -> 11 [ color="red" ];
+  11 -> 12 [ color="red" ];
+  10 -> 13 [ color="red" ];
+  11 -> 13 [ ];
+  12 -> 10 [ color="red" ];
+  13 -> 14 [ color="red" ];
+}

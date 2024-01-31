@@ -1,0 +1,22 @@
+strict digraph G {
+  1 [ label="1: Block [$stack7 = <java.lang.System: java.io.PrintStream out>, virtualinvoke $stack7.<java.io.PrintStream: void println(java.lang.String)>(\"A simple statement code\"), $stack8 = <java.lang.System: java.io.PrintStream out>, virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.String)>(\"A simple statement code\"), $stack9 = <java.lang.System: java.io.PrintStream out>, virtualinvoke $stack9.<java.io.PrintStream: void println(java.lang.String)>(\"A simple statement code\"), goto]" ];
+  2 [ label="2: Block [if l1 >= 4]" ];
+  3 [ label="3: Block [$stack4 = <java.lang.System: java.io.PrintStream out>, virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>(\"Some more code\")]" ];
+  4 [ label="4: Block [$stack6 = l2, if $stack6 != 0]" ];
+  5 [ label="5: Block [return]" ];
+  6 [ label="6: Block [l0 := @this: CodeSample, l1 := @parameter0: int, l2 := @parameter1: int, $stack3 = <java.lang.System: java.io.PrintStream out>, virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.String)>(\"A simple statement code\"), if l1 != 3]" ];
+  7 [ label="7: Block [$stack5 = <java.lang.System: java.io.PrintStream out>, virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.String)>(\"A simple statement code\"), goto]" ];
+  8 [ label="8: Start" ];
+  9 [ label="9: End" ];
+  1 -> 4 [ label="T" ];
+  2 -> 5 [ label="F" ];
+  2 -> 7 [ label="T" ];
+  3 -> 4 [ label="T" ];
+  4 -> 5 [ label="F" ];
+  4 -> 2 [ label="T" ];
+  6 -> 3 [ label="F" ];
+  6 -> 1 [ label="T" ];
+  7 -> 4 [ label="T" ];
+  8 -> 6 [ label="T" ];
+  5 -> 9 [ label="T" ];
+}
